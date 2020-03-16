@@ -41,8 +41,6 @@ Variables are available and organized according to the following software & mach
 
 #### Config
 
-#### Config
-
 Using this image, configuration of `elasticsearch` is expressed within 3 forms:
 - `elasticsearch.yml` file for configuring Elasticsearch
 - `log4j2.properties` file for configuring Elasticsearch logging
@@ -82,13 +80,56 @@ Furthermore, configuration is not constrained by hardcoded author defined defaul
   ```
 
   A list of configurable *Elasticsearch* settings can be found [here](https://github.com/elastic/elasticsearch/tree/master/docs/reference).
+  
+##### Log4j Config
+
+Elasticsearch's logging facility is managed via [Log4j](https://logging.apache.org/log4j/2.x/), a logging service/framework built under the Apache project; with its configuration defined in a `log4j.properties` file located underneath Its main `$ES_HOME/config/` directory by default. As with other configuration mechanisms supported by this image, each configuration can be expressed as environment variables prefixed with `LOG4J_`.
+
+`$LOG4J_<config-property> = <property-value (string)>` **default**: *none*
+
+See [here](https://github.com/elastic/elasticsearch/blob/master/distribution/src/config/log4j2.properties) for an example configuration file and list of supported settings.
+
+##### JVM Options
+
+Elasticsearch uses the following environment variable to manage various aspects of its JVM environment:
+
+`$ES_JAVA_OPTS = <mem-heap-mgmt-settings (string)>` **default**: *None*
+
+* Adjust general memory management options used during node operation (e.g. `-Xmx256M -Xms256M`).
+
+See [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/jvm-options.html) for more details and [here](https://github.com/elastic/elasticsearch/blob/master/distribution/src/config/jvm.options) for an example of available options.
 
 #### Launch
 
-Running a `kafka` broker is accomplished utilizing official **Kafka** binaries, obtained from Apache Kafka's official downloads [site](https://kafka.apache.org/downloads). The execution profile of a *Kafka* broker is primarily managed via its `server.properties` configuration though, due to its dependency on the *Zookeeper* key-value store service, _the following variable(s) can be customized to manage the launch of a local ZK instance to meet this dependency, provided a more dedicated and robust solution is not available._
+Running an `elasticsearch` node is accomplished utilizing official **Elasticsearch** binaries published and available [here](https://www.elastic.co/downloads/elasticsearch). Launched subject to the configuration and execution potential provided by the underlying application, an `elasticsearch` node can be set to adhere to system administrative policies right for your environment and organization.
 
-`$SETUP_ZK: <defined/true | undefined/empty-string>` (**default**: *undefined*)
-- whether to launch a local *Zookeeper* instance. **note:** any setting of this variable registers as `true` to setup a local *Zookeeper* instance.
+_The following variables can be customized to manage Elasticsearch's execution profile/policy:_
+
+`$EXTRA_RUN_ARGS: <elasticsearch-cli-options>` (**default**: *NONE*)
+- list of `elasticsearch` commandline arguments to pass to the binary at runtime for customizing launch.
+
+Supporting full expression of `elasticsearch`'s cli, this variable enables the role of target hosts to be customized according to the user's specification; whether to specify a particular process id (PID) file for process management, running a node in a verbose or silent logging mode or passing an assortment of configuration operation overrides.
+
+  A list of available command-line options can be found [here](https://gist.github.com/0x0I/f9890f486ff215cfc39642c4d7eccc01).
+
+##### Examples
+
+  Turn off or enhance standard output/error streams logging in console:
+  ```bash
+  EXTRA_RUN_ARGS=--quiet  # off
+  # ...or...
+  EXTRA_ARGS=--verbose  # on++
+  ```
+
+  Enhance logging and debugging capabilities for troubleshooting issues:
+  ```bash
+  EXTRA_ARGS="--pid /path/to/pid" # creates specific pid file in the specified path on start 
+  ```
+
+  Update node identity:
+  ```
+  EXTRA_ARGS="-E node.name=my-example-node -E cluster.name=my-example-cluster"
+  ```
 
 Dependencies
 ------------
@@ -99,43 +140,27 @@ Example Run
 ----------------
 default example:
 ```
-podman run --env SETUP_ZK=true 0labs/0x01.kafka:2.4.0_centos-7
+podman run --publish 9200:9200 0labs/0x01.elasticsearch:7.6.1_centos-7
 ```
 
-adjust broker identification details:
+provision hybrid master/data node with customized data and logging directories:
 ```
-podman run --env SETUP_ZK=true \
-           --env CONFIG_broker.id=100 \
-           --env CONFIG_advertised.host.name=kafka1.cluster.net \
-           0labs/0x01.kafka:2.4.0_centos-7
-```
-
-launch Kafka broker connecting to existing remote Zookeeper cluster and customize connection parameters:
-```
-podman run --env CONFIG_zookeeper.connect=111.22.33.4:2181 \
-           --env CONFIG_zookeeper.connection.timeout.ms=30000 \
-           --env CONFIG_zookeeper.max.in.flight.requests=30 \
-           0labs/0x01.kafka:2.4.0_centos-8
+podman run --env CONFIG_cluster.name=example-cluster \
+           --env CONFIG_node.master=true \
+           --env CONFIG_node.data=true \
+           --env CONFIG_path.data=/mnt/data/elasticsearch \
+           --env CONFIG_path.logs=/mnt/logs/elasticsearch \
+           --volume es_data:/mnt
+           0labs/0x01.elasticsearch:7.6.1_centos-7
 ```
 
-setup local zookeeper instance and modify its connection parameters:
+adjust JVM heap settings and enable verbose logging for cluster debugging/troubleshooting:
 ```
-podman run --env SETUP_ZK=true \
-           --env ZKCONFIG_clientPort=2182 \
-           --env ZKCONFIG_maxClientCnxns=10 \
-           --env ZKCONFIG_admin.serverPort=8085 \
-           --env CONFIG_zookeeper.connect=127.0.0.1:2182 \
-           0labs/0x01.kafka:2.4.0_fedora-31
-```
-
-update Kafka commit log directory and parameters in addition to providing a named volume for storage persistence:
-```
-podman run --env CONFIG_log.dirs=/mnt/data/kafka \
-           --env CONFIG_log.flush.interval.ms=3000 \
-           --env CONFIG_log.retention.hours=168 \
-           --env CONFIG_zookeeper.connect=zk1.cluster.net:2181 \
-           --volume kafka_data:/mnt/data/kafka
-           0labs/0x01.kafka:2.4.0_ubuntu:19.04
+podman run --env ES_JAVA_OPTS='-Xms16g -Xmx16g' \
+           --env LOG4J_logger.action.name=org.elasticsearch.action \
+           --env LOG4J_logger.action.level=debug \
+           --env EXTRA_RUN_ARGS=--verbose \
+           0labs/0x01.elasticsearch:7.6.1_centos-7
 ```
 
 License
