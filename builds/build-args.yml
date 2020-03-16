@@ -1,0 +1,48 @@
+default_os_version: centos-7
+default_archive_url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.6.1-linux-x86_64.tar.gz
+default_es_version: 7.6.1
+default_package_manager: dnf
+
+build_images: false
+push_images: false
+
+# OS distribution specific build dependencies
+rhel_dependencies: &rhel_deps
+  system_dependencies:
+    - java-1.8.0-openjdk
+    - curl
+debian_dependencies: &debian_deps
+  system_dependencies:
+    - openjdk-8-jre
+    - curl
+
+# Container template build matrix
+build_matrix:
+  - name: centos-7
+    os_version: centos:7
+    package_manager: yum
+    <<: *rhel_deps
+  - name: centos-8
+    os_version: centos:8
+    <<: *rhel_deps
+  - name: fedora-29
+    os_version: fedora:29
+    <<: *rhel_deps
+  - name: fedora-30
+    os_version: fedora:30
+    <<: *rhel_deps
+  - name: fedora-31
+    os_version: fedora:31
+    <<: *rhel_deps
+  - name: ubuntu-18.04
+    os_version: ubuntu:18.04
+    package_manager: apt
+    <<: *debian_deps
+  - name: ubuntu-19.04
+    os_version: ubuntu:19.04
+    package_manager: apt
+    <<: *debian_deps
+  - name: debian-9
+    os_version: debian:9
+    package_manager: apt
+    <<: *debian_deps
