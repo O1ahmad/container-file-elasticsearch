@@ -83,7 +83,7 @@ Furthermore, configuration is not constrained by hardcoded author defined defaul
   
 ##### Log4j Config
 
-Elasticsearch's logging facility is managed via [Log4j](https://logging.apache.org/log4j/2.x/), a logging service/framework built under the Apache project; with its configuration defined in a `log4j.properties` file located underneath Its main `$ES_HOME/config/` directory by default. As with other configuration mechanisms supported by this image, each configuration can be expressed as environment variables prefixed with `LOG4J_`.
+Elasticsearch's logging facility is managed via [Log4j](https://logging.apache.org/log4j/2.x/), a logging service/framework built under the Apache project; with its configuration defined in a `log4j.properties` file located underneath its main `$ES_HOME/config` directory by default. As with other configuration mechanisms supported by this image, each configuration can be expressed as environment variables prefixed with `LOG4J_`.
 
 `$LOG4J_<config-property> = <property-value (string)>` **default**: *none*
 
@@ -150,7 +150,7 @@ podman run --env CONFIG_cluster.name=example-cluster \
            --env CONFIG_node.data=true \
            --env CONFIG_path.data=/mnt/data/elasticsearch \
            --env CONFIG_path.logs=/mnt/logs/elasticsearch \
-           --volume es_data:/mnt
+           --volume es_data:/mnt \
            0labs/0x01.elasticsearch:7.6.1_centos-7
 ```
 
