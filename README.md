@@ -2,7 +2,6 @@
 <p><img src="https://seeklogo.com/images/E/elasticsearch-logo-C75C4578EC-seeklogo.com.png" alt="elasticsearch logo" title="elasticsearch" align="right" height="60" /></p>
 
 Container File :mag_right: :high_brightness: Elasticsearch
-
 =========
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/0x0I/container-file-elasticsearch?color=yellow)
 [![Build Status](https://travis-ci.org/0x0I/container-file-elasticsearch.svg?branch=master)](https://travis-ci.org/0x0I/container-file-elasticsearch)
