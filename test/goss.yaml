@@ -1,0 +1,37 @@
+# test resource verification spec
+file:
+  /opt/elasticsearch:
+    exists: true
+    mode: "0755"
+    owner: elasticsearch
+    group: elasticsearch
+    filetype: directory
+  /opt/elasticsearch/bin/elasticsearch:
+    exists: true
+    mode: "0755"
+    owner: elasticsearch
+    group: elasticsearch
+    filetype: file
+  /opt/elasticsearch/config/elasticsearch.yml:
+    exists: true
+    mode: "0660"
+    owner: elasticsearch
+    group: elasticsearch
+    filetype: file
+  /opt/elasticsearch/config/log4j2.properties:
+    exists: true
+    mode: "0660"
+    owner: elasticsearch
+    group: elasticsearch
+    filetype: file
+process:
+  java:
+    running: true
+    skip: false
+port:
+  tcp:9207:
+    listening: true
+    skip: false
+  tcp:9300:
+    listening: true
+    skip: false

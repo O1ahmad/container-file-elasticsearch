@@ -1,0 +1,11 @@
+process:
+  java:
+    running: true
+    skip: false
+port:
+  tcp:9207:
+    listening: true
+    skip: false
+  tcp:9300:
+    listening: true
+    skip: false
