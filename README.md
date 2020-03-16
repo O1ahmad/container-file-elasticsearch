@@ -41,46 +41,47 @@ Variables are available and organized according to the following software & mach
 
 #### Config
 
-**Kafka** supports specification of various options controlling aspects of a broker's behavior and operational profile. Each configuration can be expressed within a simple configuration file, `server.properties` by default, composed of **key=vaue** pairs representing configuration properties available.
+#### Config
 
-_The following details the facilities provided by this image to manage the content of the aforementioned configuration file:_
+Using this image, configuration of `elasticsearch` is expressed within 3 forms:
+- `elasticsearch.yml` file for configuring Elasticsearch
+- `log4j2.properties` file for configuring Elasticsearch logging
+- `$ES_JAVA_OPTS` environment variables for configuring Elasticsearch JVM settings
 
-Each of these configurations can be expressed using environment variables prefixed with `CONFIG_` organized according to the following:
-* **broker operations** - various settings related to broker operational behavior within a cluster (e.g. advertisement of broker listening parameters/details, topic and partition/replica management, logging storage and retention policies, resource usage and limitation profiles)
-* **default topic properties** - settings which manage per topic default specifications (capable of being overridden during topic creation)
+The location of these configuration files within a container is based on an `$ES_HOME` environment variable, set during image build and defaulting to `/opt/elasticsearch`.
+
+For additional details and to get an idea how each config should look, reference Elastic's official [configuration](https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html) documentation.
+
+_The following variables can be customized to manage the location and content of these configurations:_
+
+Each configuration applied to the operational behavior of the server can be expressed using environment variables prefixed with `CONFIG_` organized according to the following:
+* **storage paths** - settings related to locations of runtime variable data (e.g. logs and indices data)
+* **node role/profile policy** - [settings](https://github.com/elastic/elasticsearch/blob/master/docs/reference/modules/node.asciidoc) which manage a node's role and operational responsibilities within a cluster
+* **cluster** - controls cluster allocation, logging, metadata and miscellaneous management [settings](https://github.com/elastic/elasticsearch/blob/master/docs/reference/modules/cluster.asciidoc)
+* **discovery** - [settings](https://github.com/elastic/elasticsearch/blob/master/docs/reference/modules/discovery.asciidoc) responsible for discovering nodes, electing a master, forming a cluster, and publishing the cluster state changes
+* **network** - network based [settings](https://github.com/elastic/elasticsearch/blob/master/docs/reference/modules/network.asciidoc) defining how an `elasticserch` instance communicates over a network
 
 `$CONFIG_<config-property> = <property-value (string)>` **default**: *None*
 
-* Any configuration setting/value key-pair supported by `kafka` **broker configs** should be expressible within each `CONFIG_` environment variable and properly rendered within the associated properties file. **Note:** `<config-property>` along with the `property-value` specifications should be written as expected to be rendered within the associated *properties* config (**e.g.** `CONFIG_zookeeper.connect=zk1.cluster.net:2121` or  `CONFIG_advertised.listeners=PLAINTEXT://kafka1.cluster.net:9092`).
+* Any configuration setting/value key-pair supported by `elasticsearch` should be expressible within each `CONFIG_` environment variable and properly rendered within the associated `elasticsearch.yml`. **Note:** `<config-property>` along with the `property-value` specifications should be written as expected to be rendered within the associated *properties* config (**e.g.** `CONFIG_node.name=example_node` or  `CONFIG_network.host=0.0.0.0`).
 
-Furthermore, configuration is not constrained by hardcoded author defined defaults or limited by pre-baked templating. If the config section, setting and value are recognized by your `kafka` version, :thumbsup: to define within an environnment variable according to the following syntax.
+Furthermore, configuration is not constrained by hardcoded author defined defaults or limited by pre-baked templating. If the config section, setting and value are recognized by your `Elasticsearch` version, :thumbsup: to define within an environnment variable according to the following syntax.
 
   `<config-property>` -- represents a specific configuration property to set:
 
   ```bash
-  # Property: broker.id (sets unique identifier for an individual Kafka broker within a cluster)
-  CONFIG_broker.id=<property-value>
+  # Property: discovery.seed_hosts (peer nodes in target cluster likely to be live and contactable for seeding the discovery process)
+  CONFIG_discovery.seed_hosts=<property-value>
   ```
 
   `<property-value>` -- represents property value to configure:
   ```bash
-  # Property: broker.id
-  # Value: 10 (value of type INT)
-  CONFIG_broker.id=10
+  # Property: discovery.seed_hosts
+  # Value: list of additional peers resolved by hostname ['es1.cluster.domain', 'es2.cluster.domain']
+  CONFIG_discovery.seed_hosts=['es1.cluster.domain', 'es2.cluster.domain']
   ```
 
-  A list of configurable *Kafka* settings can be found [here](https://kafka.apache.org/documentation/#brokerconfigs).
-
-`$BROKER_ID_COMMAND = <string>` (**default**: *None*)
-- shell command to execute to determine unique broker id of provisioned Kafka broker. Used in place of application default if `CONFIG_broker.id` is not set.
-
-##### Zookeeper Config
-
-Use of this Containerfile and resultant image also enables management of a local instance of *Zookeeper* via embedded binaries included within each *Kafka* installation. Similar to *Kafka*, each configuration is rendered within a properties file, `zookeeper.properties` by default, and can be expressed as environment variables prefixed with `ZKCONFIG_`.
-
-`$ZKCONFIG_<config-property> = <property-value (string)>` **default**: *None*
-
-See [here](https://github.com/apache/zookeeper/blob/master/conf/zoo_sample.cfg) for an example configuration file and list of supported settings.
+  A list of configurable *Elasticsearch* settings can be found [here](https://github.com/elastic/elasticsearch/tree/master/docs/reference).
 
 #### Launch
 
