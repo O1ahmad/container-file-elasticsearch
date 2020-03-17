@@ -118,17 +118,17 @@ Supporting full expression of `elasticsearch`'s cli, this variable enables the r
   ```bash
   EXTRA_RUN_ARGS=--quiet  # off
   # ...or...
-  EXTRA_ARGS=--verbose  # on++
+  EXTRA_RUN_ARGS=--verbose  # on++
   ```
 
   Enhance logging and debugging capabilities for troubleshooting issues:
   ```bash
-  EXTRA_ARGS="--pid /path/to/pid" # creates specific pid file in the specified path on start 
+  EXTRA_RUN_ARGS="--pid /path/to/pid" # creates specific pid file in the specified path on start 
   ```
 
   Update node identity:
   ```
-  EXTRA_ARGS="-E node.name=my-example-node -E cluster.name=my-example-cluster"
+  EXTRA_RUN_ARGS="-E node.name=my-example-node -E cluster.name=my-example-cluster"
   ```
 
 Dependencies
