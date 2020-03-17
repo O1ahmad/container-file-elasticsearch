@@ -18,12 +18,20 @@ file:
     owner: elasticsearch
     group: elasticsearch
     filetype: file
+    contains:
+      - "node.name:"
+      - "node.master:"
+      - "node.data:"
+      - "http.port:"
   /opt/elasticsearch/config/log4j2.properties:
     exists: true
     mode: "0660"
     owner: elasticsearch
     group: elasticsearch
     filetype: file
+    contains:
+      - "logger.action.name ="
+      - "logger.action.level ="
 process:
   java:
     running: true
