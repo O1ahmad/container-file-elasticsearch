@@ -121,12 +121,12 @@ Supporting full expression of `elasticsearch`'s cli, this variable enables the r
   EXTRA_RUN_ARGS=--verbose  # on++
   ```
 
-  Enhance logging and debugging capabilities for troubleshooting issues:
+ Update service PID file path for process management:
   ```bash
   EXTRA_RUN_ARGS="--pid /path/to/pid" # creates specific pid file in the specified path on start 
   ```
 
-  Update node identity:
+ Customize node identity:
   ```
   EXTRA_RUN_ARGS="-E node.name=my-example-node -E cluster.name=my-example-cluster"
   ```
