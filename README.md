@@ -143,14 +143,12 @@ default example:
 podman run --publish 9200:9200 0labs/0x01.elasticsearch:7.6.1_centos-7
 ```
 
-provision hybrid master/data node with customized data and logging directories:
+provision hybrid master/data node and provide named mount for data persistence:
 ```
 podman run --env CONFIG_cluster.name=example-cluster \
            --env CONFIG_node.master=true \
            --env CONFIG_node.data=true \
-           --env CONFIG_path.data=/mnt/data/elasticsearch \
-           --env CONFIG_path.logs=/mnt/logs/elasticsearch \
-           --volume es_data:/mnt \
+           --volume es_data:/opt/elasticsearch/data \
            0labs/0x01.elasticsearch:7.6.1_centos-7
 ```
 
