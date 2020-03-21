@@ -7,28 +7,22 @@ RUN {{ package_manager }} update -y && \
     {{ package_manager }} install -y {{ system_dependencies|join(' ') }}
 {% endif %}
 
-ENV ES_HOME=/opt/elasticsearch
-ENV ES_USER=elasticsearch
-
-RUN useradd $ES_USER
-
-RUN mkdir -p $ES_HOME && curl -L {{ archive_url }} | tar xzf - --strip-components=1 -C $ES_HOME
-
-RUN chown -R "${ES_USER}:${ES_USER}" $ES_HOME
-
-ENV PATH $PATH:${ES_HOME}/bin
-
 RUN mkdir /entrypoint.d
 COPY entrypoints/10-setup-config.sh entrypoints/20-log4j-config.sh /entrypoint.d/
 
 COPY scripts/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
 COPY scripts/start-elasticsearch.sh /usr/bin/start-elasticsearch.sh
-RUN chmod +x /usr/bin/start-elasticsearch.sh
+RUN chmod +x /entrypoint.sh /usr/bin/start-elasticsearch.sh
+
+ENV ES_HOME=/opt/elasticsearch
+WORKDIR $ES_HOME
+
+ENV ES_USER=elasticsearch
+RUN useradd --no-create-home --system --user-group $ES_USER
+RUN chown -R "${ES_USER}:${ES_USER}" $ES_HOME
 
 USER $ES_USER
+RUN curl -L {{ archive_url }} | tar xzf - --strip-components=1 -C $ES_HOME
 
 ENTRYPOINT ["/entrypoint.sh"]
-
 CMD ["start-elasticsearch.sh"]

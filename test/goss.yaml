@@ -14,7 +14,6 @@ file:
     filetype: file
   /opt/elasticsearch/config/elasticsearch.yml:
     exists: true
-    mode: "0660"
     owner: elasticsearch
     group: elasticsearch
     filetype: file
@@ -25,7 +24,6 @@ file:
       - "http.port:"
   /opt/elasticsearch/config/log4j2.properties:
     exists: true
-    mode: "0660"
     owner: elasticsearch
     group: elasticsearch
     filetype: file
@@ -42,4 +40,8 @@ port:
     skip: false
   tcp:9300:
     listening: true
+    skip: false
+http:
+  http://localhost:9207:
+    status: 200
     skip: false
