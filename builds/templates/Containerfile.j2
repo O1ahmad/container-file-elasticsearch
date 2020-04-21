@@ -7,7 +7,6 @@ RUN {{ package_manager }} update -y && \
     {{ package_manager }} install -y {{ system_dependencies|join(' ') }}
 {% endif %}
 
-RUN mkdir /entrypoint.d
 COPY entrypoints/10-setup-config.sh entrypoints/20-log4j-config.sh /entrypoint.d/
 
 COPY scripts/entrypoint.sh /entrypoint.sh
